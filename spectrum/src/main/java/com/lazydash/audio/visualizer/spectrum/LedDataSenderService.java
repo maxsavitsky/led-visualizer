@@ -26,6 +26,8 @@ public class LedDataSenderService {
 
     private static final int FPS = SpectralAnimator.FPS;
 
+    private boolean isPreviousDataWasEmpty = false;
+
     private boolean isConnecting = false;
 
     private final FrequencyBarsFFTService frequencyBarsFFTService;
@@ -75,10 +77,15 @@ public class LedDataSenderService {
         bytes[7] = (byte) (0);
         bytes[8] = (byte) (argsCount & 0xFF);
         bytes[9] = (byte) ((AppConfig.saturation / 100.0) * 255); // saturation
+        boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
-            bytes[10 + i] = (byte) (bar.getColor().getHue() / 360.0 * 255);
+            var hueVal = bar.getColor().getHue() / 360.0;
+            bytes[10 + i] = (byte) (hueVal * 255);
+            areAllEmpty &= (1 - hueVal) <= 0.02;
         }
+        if (areAllEmpty && isPreviousDataWasEmpty) return; // just skip
+        isPreviousDataWasEmpty = areAllEmpty;
 
         sendBytes(bytes);
     }
