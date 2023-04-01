@@ -43,7 +43,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // load all the native apis
-        Path dllPath = Paths.get("./dll");
+        /*Path dllPath = Paths.get("./dll");
         if (Files.exists(dllPath)) {
             String[] list = dllPath.toFile().list();
             if (list != null) {
@@ -54,7 +54,7 @@ public class Main extends Application {
                     }
                 });
             }
-        }
+        }*/
 
         // plugins
         PluginSystem.getInstance().startAllPlugins();
@@ -71,6 +71,8 @@ public class Main extends Application {
         FrequencyBarsFFTService spectralFFTService = new FrequencyBarsFFTService();
         SpectralAnimator spectralAnimator = new SpectralAnimator(spectralFFTService, spectralView);
 
+        LedDataSenderService dataSenderService = new LedDataSenderService(spectralFFTService);
+
         // setup
         spectralView.configure();
         configureStage(stage, scene);
@@ -86,7 +88,7 @@ public class Main extends Application {
         stage.show();
         spectralAnimator.play();
         tarsosAudioEngine.start();
-
+        dataSenderService.start();
     }
 
     private void wireSettingsStage(Stage settingsStage, Scene rootScene) {

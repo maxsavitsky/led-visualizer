@@ -1,5 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.core.model;
 
+import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
 import javafx.scene.paint.Color;
 
 public class FrequencyBar {
@@ -10,7 +11,9 @@ public class FrequencyBar {
     public FrequencyBar(double hz, double height, Color color) {
         this.hz = hz;
         this.height = height;
-        this.color = color;
+        double hue = 360 * (1 - height / AppConfig.maxBarHeight);
+        //hue = Math.max(0, hue - 75);
+        this.color = Color.hsb(hue, 1.0, 1.0);
     }
 
     public double getHz() {
@@ -34,6 +37,6 @@ public class FrequencyBar {
     }
 
     public void setColor(Color color) {
-        this.color = color;
+        //this.color = color;
     }
 }

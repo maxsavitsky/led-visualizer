@@ -12,14 +12,14 @@ public class AppConfig {
     public static int audioWindowNumber = 3;
 
     // Spectral View
-    public static int signalAmplification = 100;
+    public static int signalAmplification = 120;
     public static int signalThreshold = -34;
     public static String maxLevel = "RMS";
-    public static String weight = "dBZ";
+    public static String weight = "dBB";
     public static int frequencyStart = 39;
-    public static int frequencyCenter = 1000;
+    public static int frequencyCenter = 8000;
     public static int frequencyEnd = 16001;
-    public static int octave = 6;
+    public static int octave = 18;
     public static int minBarHeight = 2;
     public static int barGap = 1;
 

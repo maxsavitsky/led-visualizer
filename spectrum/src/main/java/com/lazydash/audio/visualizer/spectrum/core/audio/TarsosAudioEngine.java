@@ -7,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,30 +29,51 @@ public class TarsosAudioEngine {
     }
 
     public void start() {
-        try {
-            AudioFormat audioFormat = getAudioFormat();
+        AudioFormat audioFormat = getAudioFormat();
 
-            float sampleRate = audioFormat.getSampleRate();
-            int audioWindowSize = AppConfig.audioWindowSize;
-            int audioWindowNumber = AppConfig.audioWindowNumber;
+        float sampleRate = audioFormat.getSampleRate();
+        int audioWindowSize = AppConfig.audioWindowSize;
+        int audioWindowNumber = AppConfig.audioWindowNumber;
 
-            float buffer = sampleRate * (audioWindowSize / 1000f);
-            int bufferMax = (int) buffer * audioWindowNumber;
-            int bufferOverlap = bufferMax - (int) buffer;
+        float buffer = sampleRate * (audioWindowSize / 1000f);
+        int bufferMax = (int) buffer * audioWindowNumber;
+        int bufferOverlap = bufferMax - (int) buffer;
 
-            TargetDataLine line = getLine(audioFormat, bufferMax);
-            run(line, audioFormat, bufferMax, bufferOverlap);
+        /*TargetDataLine line = getLine(audioFormat, bufferMax);
+        run(line, audioFormat, bufferMax, bufferOverlap);*/
 
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        audioThread = new Thread(()->{
+            try (ServerSocket serverSocket = new ServerSocket(13485)) {
+                while(!Thread.currentThread().isInterrupted()) {
+                    Socket socket = serverSocket.accept();
+                    socket.setKeepAlive(true);
+                    try (InputStream is = socket.getInputStream();
+                         NetworkInputStream nis = new NetworkInputStream(is);
+                         AudioInputStream stream = new AudioInputStream(nis, audioFormat, AudioSystem.NOT_SPECIFIED)) {
+                        JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
+
+                        dispatcher = new AudioDispatcher(audioStream, bufferMax, bufferOverlap);
+                        //dispatcher.addAudioProcessor(new AudioEngineRestartProcessor(this));
+                        //dispatcher.addAudioProcessor(new MultichannelToMono(audioFormat.getChannels(), true));
+                        dispatcher.addAudioProcessor(new FFTAudioProcessor(audioFormat, fttListenerList));
+
+                        // run the dispatcher (on a new thread).
+                        dispatcher.run();
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }, "Audio dispatching");
+        audioThread.setDaemon(true);
+        audioThread.start();
 
     }
 
     public void stop() {
         try {
             if (dispatcher != null) {
+                audioThread.interrupt();
                 dispatcher.stop();
 
                 // wait 5 seconds for audio dispatcher to finish
@@ -133,21 +158,26 @@ public class TarsosAudioEngine {
     }
 
     private AudioFormat getAudioFormat() {
-        return new AudioFormat(
+        /*return new AudioFormat(
                 AppConfig.sampleRate,
                 AppConfig.sampleSizeInBits,
                 AppConfig.channels,
                 AppConfig.signed,
                 AppConfig.bigEndian
-        );
+        );*/
+        return new AudioFormat(48000, 16, 1, true, false);
     }
 
     private void run(TargetDataLine line, AudioFormat audioFormat, int bufferSize, int bufferOverlay) {
         final AudioInputStream stream = new AudioInputStream(line);
+        run(stream, audioFormat, bufferSize, bufferOverlay);
+    }
+
+    private void run(AudioInputStream stream, AudioFormat audioFormat, int bufferSize, int bufferOverlay){
         JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
 
         dispatcher = new AudioDispatcher(audioStream, bufferSize, bufferOverlay);
-        dispatcher.addAudioProcessor(new AudioEngineRestartProcessor(this));
+//        dispatcher.addAudioProcessor(new AudioEngineRestartProcessor(this));
 //        dispatcher.addAudioProcessor(new MultichannelToMono(audioFormat.getChannels(), true));
         dispatcher.addAudioProcessor(new FFTAudioProcessor(audioFormat, fttListenerList));
 
@@ -156,4 +186,45 @@ public class TarsosAudioEngine {
         audioThread.setDaemon(true);
         audioThread.start();
     }
+
+    private static class NetworkInputStream extends InputStream {
+
+        private final static int FIRST_PACKET_SIZE = 60;
+        private final static int BYTES_TO_SKIP_COUNT = 36;
+
+        private final byte[] buffer = new byte[4096];
+        private int bufferOffset = 0;
+        private int bufferLength = 0;
+
+        private final InputStream is;
+
+        public NetworkInputStream(InputStream is) {
+            this.is = is;
+        }
+
+        private boolean fillBuffer() throws IOException {
+            int len = is.read(buffer);
+            if(len == FIRST_PACKET_SIZE) // skip
+                return fillBuffer();
+            if(len == -1)
+                return false;
+            if(len < BYTES_TO_SKIP_COUNT){
+                bufferOffset = bufferLength = len;
+            }else{
+                bufferLength = len;
+                bufferOffset = BYTES_TO_SKIP_COUNT;
+            }
+            return true;
+        }
+
+        @Override
+        public int read() throws IOException {
+            if(bufferOffset == bufferLength){
+                if(!fillBuffer())
+                    return -1;
+            }
+            return buffer[bufferOffset++] & 0xFF;
+        }
+    }
+
 }

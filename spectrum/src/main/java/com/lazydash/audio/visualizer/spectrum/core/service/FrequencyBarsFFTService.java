@@ -34,13 +34,15 @@ public class FrequencyBarsFFTService implements FFTListener {
     private FFTTimeFilter fftTimeFilter = new FFTTimeFilter();
     private BarsHeightCalculator barsHeightCalculator = new BarsHeightCalculator();
 
+    private List<FrequencyBar> frequencyBars = new ArrayList<>();
+
     @Override
     public void frame(double[] hzBins, double[] normalizedAmplitudes) {
         try {
             lock.lock();
 
             if (this.hzBins != null) {
-                LOGGER.info("Audio frame dropped");
+                //LOGGER.info("Audio frame dropped");
             }
 
             this.hzBins = hzBins;
@@ -49,9 +51,15 @@ public class FrequencyBarsFFTService implements FFTListener {
         } finally {
             lock.unlock();
         }
+
+        frequencyBars = computeFrequencyBarList();
     }
 
     public List<FrequencyBar> getFrequencyBarList() {
+        return frequencyBars;
+    }
+
+    public List<FrequencyBar> computeFrequencyBarList() {
         long oldTime = System.currentTimeMillis();
         double[] returnBinz;
         double[] returnAmplitudes;
