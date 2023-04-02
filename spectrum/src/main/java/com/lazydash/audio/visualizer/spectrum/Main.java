@@ -82,7 +82,7 @@ public class Main extends Application {
         PluginSystem.getInstance().registerAllFffPlugins(tarsosAudioEngine);
 
         wireSettingsStage(settingsStage, scene);
-        wirePrimaryStage(stage, configFilePersistence, tarsosAudioEngine);
+        wirePrimaryStage(stage, configFilePersistence, tarsosAudioEngine, dataSenderService, spectralAnimator);
 
         // run
         stage.show();
@@ -99,13 +99,15 @@ public class Main extends Application {
         });
     }
 
-    private void wirePrimaryStage(Stage primaryStage, ConfigFilePersistence configFilePersistence, TarsosAudioEngine tarsosAudioEngine) {
+    private void wirePrimaryStage(Stage primaryStage, ConfigFilePersistence configFilePersistence, TarsosAudioEngine tarsosAudioEngine, LedDataSenderService dataSenderService, SpectralAnimator animator) {
         primaryStage.setOnCloseRequest(event -> {
             AppConfig.windowHeight = primaryStage.getHeight();
             AppConfig.windowWidth = primaryStage.getWidth();
             configFilePersistence.persist(AppConfig.class, "./application.properties");
             PluginSystem.getInstance().stopAllPlugins();
             tarsosAudioEngine.stop();
+            dataSenderService.stop();
+            animator.stop();
             Platform.exit();
 
             // force exit in 5 seconds if application does not finish

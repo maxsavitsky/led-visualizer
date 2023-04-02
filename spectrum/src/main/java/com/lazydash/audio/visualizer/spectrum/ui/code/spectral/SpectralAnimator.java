@@ -31,6 +31,10 @@ public class SpectralAnimator {
         scheduledExecutorService.scheduleAtFixedRate(()-> Platform.runLater(this::updateSpectralView), 1000, 1000 / FPS, TimeUnit.MILLISECONDS);
     }
 
+    public void stop(){
+        scheduledExecutorService.shutdownNow();
+    }
+
     private void updateSpectralView(){
         spectralView.updateState(spectralFFTService.getFrequencyBarList());
 

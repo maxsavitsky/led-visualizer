@@ -50,6 +50,19 @@ public class LedDataSenderService {
         });
     }
 
+    public void stop(){
+        if(socket != null) {
+            try {
+                socket.shutdownInput();
+                socket.shutdownOutput();
+                socket.close();
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+        scheduledExecutorService.shutdownNow();
+    }
+
     private void send(){
         List<FrequencyBar> list = frequencyBarsFFTService.getFrequencyBarList();
         if(list.isEmpty() || isConnecting)

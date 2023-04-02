@@ -21,6 +21,8 @@ public class TarsosAudioEngine {
 
     private AudioDispatcher dispatcher;
     private Thread audioThread;
+    private ServerSocket serverSocket;
+    private Socket currentSocket;
 
     private List<FFTListener> fttListenerList = new LinkedList<>();
 
@@ -43,11 +45,13 @@ public class TarsosAudioEngine {
         run(line, audioFormat, bufferMax, bufferOverlap);*/
 
         audioThread = new Thread(()->{
-            try (ServerSocket serverSocket = new ServerSocket(13485)) {
-                while(!Thread.currentThread().isInterrupted()) {
-                    Socket socket = serverSocket.accept();
-                    socket.setKeepAlive(true);
-                    try (InputStream is = socket.getInputStream();
+            try {
+                serverSocket = new ServerSocket(13485);
+                while(!serverSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
+                    LOGGER.info("waiting for socket " + serverSocket.isClosed() );
+                    currentSocket = serverSocket.accept();
+                    currentSocket.setKeepAlive(true);
+                    try (InputStream is = currentSocket.getInputStream();
                          NetworkInputStream nis = new NetworkInputStream(is);
                          AudioInputStream stream = new AudioInputStream(nis, audioFormat, AudioSystem.NOT_SPECIFIED)) {
                         JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
@@ -57,13 +61,15 @@ public class TarsosAudioEngine {
                         //dispatcher.addAudioProcessor(new MultichannelToMono(audioFormat.getChannels(), true));
                         dispatcher.addAudioProcessor(new FFTAudioProcessor(audioFormat, fttListenerList));
 
-                        // run the dispatcher (on a new thread).
+                        // run the dispatcher
                         dispatcher.run();
                     }
                 }
             } catch (IOException e) {
+                LOGGER.error("", e);
                 throw new RuntimeException(e);
             }
+            LOGGER.info("Audio thread stopping");
         }, "Audio dispatching");
         audioThread.setDaemon(true);
         audioThread.start();
@@ -73,17 +79,24 @@ public class TarsosAudioEngine {
     public void stop() {
         try {
             if (dispatcher != null) {
-                audioThread.interrupt();
                 dispatcher.stop();
-
-                // wait 5 seconds for audio dispatcher to finish
-                audioThread.join(1 * 1000);
             }
+            try {
+                if (serverSocket != null)
+                    serverSocket.close();
+                if(currentSocket != null)
+                    currentSocket.close();
+            }catch (IOException e){
+                LOGGER.error("failed to close server socket", e);
+            }
+
+            audioThread.join();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+        LOGGER.info(String.valueOf(audioThread.getState()));
     }
 
     public void restart() {
