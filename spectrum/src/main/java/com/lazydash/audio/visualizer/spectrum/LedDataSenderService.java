@@ -13,11 +13,14 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class LedDataSenderService {
 
@@ -68,6 +71,7 @@ public class LedDataSenderService {
         if(list.isEmpty() || isConnecting)
             return;
         if(!socket.isConnected() || socket.isClosed()) {
+            LOGGER.error("Broken connection. Reconnecting");
             try {
                 socket = createSocket();
             } catch (IOException e) {
@@ -75,39 +79,39 @@ public class LedDataSenderService {
             }
         }
         int sz = Math.min(150, list.size());
-        byte[] bytes = new byte[10 + sz];
-        int len = bytes.length - 3;
+        byte[] bytes = new byte[9 + sz];
+        int len = bytes.length - 2;
         //LOGGER.info(String.valueOf(len));
-        bytes[0] = 2;
-        bytes[1] = (byte) (len >> 8);
-        bytes[2] = (byte) (len & 0xFF);
-        bytes[3] = 7; // command index
-        bytes[4] = 0; // effect number (not for us)
-        bytes[5] = 10; // speed (not for us)
-        bytes[6] = 0; // brightness
+        bytes[0] = (byte) (len >> 8);
+        bytes[1] = (byte) (len & 0xFF);
+        bytes[2] = 7; // command index
+        bytes[3] = 0; // effect number (not for us)
+        bytes[4] = 10; // speed (not for us)
+        bytes[5] = 0; // brightness
         // args
         int argsCount = 1 + sz;
-        bytes[7] = (byte) (0);
-        bytes[8] = (byte) (argsCount & 0xFF);
-        bytes[9] = (byte) ((AppConfig.saturation / 100.0) * 255); // saturation
+        bytes[6] = (byte) (0);
+        bytes[7] = (byte) (argsCount & 0xFF);
+        bytes[8] = (byte) ((AppConfig.saturation / 100.0) * 255); // saturation
         boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
             var hueVal = bar.getColor().getHue() / 360.0;
-            bytes[10 + i] = (byte) (hueVal * 255);
+            bytes[9 + i] = (byte) (hueVal * 255);
             areAllEmpty &= (1 - hueVal) <= 0.02;
         }
         if (areAllEmpty && isPreviousDataWasEmpty) return; // just skip
         isPreviousDataWasEmpty = areAllEmpty;
+        //LOGGER.info("Elapsed time {}", System.currentTimeMillis() - startTime);
 
         sendBytes(bytes);
     }
 
     private void sendBytes(byte[] bytes) {
+        long startTime = System.currentTimeMillis();
         try {
             OutputStream os = socket.getOutputStream();
             os.write(bytes);
-            os.flush();
         }catch (IOException e){
             LOGGER.error("Error writing to socket", e);
             try{
@@ -116,13 +120,18 @@ public class LedDataSenderService {
                 throw new RuntimeException(ex);
             }
         }
+        //LOGGER.info("Elapsed time {}", System.currentTimeMillis() - startTime);
     }
 
     private Socket createSocket() throws IOException {
+        LOGGER.info("connecting to socket");
         isConnecting = true;
-        Socket s = new Socket("192.168.100.80", 80);
+        Socket s = new Socket();
         s.setKeepAlive(true);
+        //s.setTcpNoDelay(true);
+        s.connect(new InetSocketAddress("192.168.100.80", 80));
         isConnecting = false;
+        LOGGER.info("connected, {}", s.getOutputStream());
         return s;
     }
 }

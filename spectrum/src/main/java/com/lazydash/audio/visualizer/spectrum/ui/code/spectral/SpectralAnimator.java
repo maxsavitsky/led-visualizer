@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SpectralAnimator {
 
-    public static final int FPS = 40;
+    public static final int FPS = 50;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpectralAnimator.class);
     private long oldTime = System.currentTimeMillis();
