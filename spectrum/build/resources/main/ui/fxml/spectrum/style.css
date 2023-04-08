@@ -1,0 +1,68 @@
+* {
+    -fx-font-smoothing-type: gray;
+}
+
+.title {
+    -fx-font-size: 18px;
+}
+
+.sliderValueLabel {
+    -fx-pref-width: 30;
+}
+
+.settings-group {
+    -fx-vgap: 4;
+    -fx-hgap: 20;
+}
+
+.button-group {
+    -fx-spacing: 4;
+}
+
+#side-bar {
+    -fx-pref-width: 130px;
+    -fx-background-color: #d9d9d9;
+}
+
+#center-pane {
+    -fx-padding: 5 20 5 20;
+    -fx-border-width: 0 0 0 3;
+}
+
+.side-bar-text {
+    -fx-font-size: 14px;
+    -fx-fill-width: true;
+    -fx-max-width: Infinity;
+    -fx-border-width: 0 0 0 2;
+    -fx-border-color: #d9d9d9;
+    -fx-padding: 5 10 5 20;
+}
+
+.selected {
+    -fx-border-color: -fx-focus-color;
+    -fx-background-color: #f4f4f4;
+}
+
+.side-bar-text:hover {
+    -fx-background-color: -fx-focus-color;
+    -fx-border-color: -fx-focus-color;
+    -fx-text-fill: WHITE;
+}
+
+.separator {
+    -fx-padding: 10 0 10 0;
+}
+
+.settings-title {
+    -fx-font-size: 18pt;
+    -fx-padding: 10 10 5 10;
+}
+
+.settings-subtitle {
+    -fx-font-size: 14pt;
+    -fx-padding: 10 10 2 10;
+}
+
+.scroll-pane {
+    -fx-background-color:transparent;
+}

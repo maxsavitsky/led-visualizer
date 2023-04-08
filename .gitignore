@@ -38,3 +38,6 @@ spectrum/data/
 
 # Config files
 application.properties
+/buildSrc/.gradle/
+/buildSrc/build/
+/.gradle/
