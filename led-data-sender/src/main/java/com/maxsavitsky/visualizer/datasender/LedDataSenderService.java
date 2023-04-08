@@ -28,6 +28,7 @@ public class LedDataSenderService {
 
     private final FrequencyBarsFFTService frequencyBarsFFTService;
     private Socket socket;
+    private boolean isSocketSetManually = false;
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -35,10 +36,16 @@ public class LedDataSenderService {
         this.frequencyBarsFFTService = frequencyBarsFFTService;
     }
 
+    public void setSocket(Socket socket){
+        this.socket = socket;
+        isSocketSetManually = true;
+    }
+
     public void start(){
         executor.execute(()->{
             try {
-                socket = createSocket();
+                if(!isSocketSetManually)
+                    socket = createSocket();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -47,7 +54,7 @@ public class LedDataSenderService {
     }
 
     public void stop(){
-        if(socket != null) {
+        if(!isSocketSetManually && socket != null) {
             try {
                 socket.shutdownInput();
                 socket.shutdownOutput();
@@ -63,7 +70,7 @@ public class LedDataSenderService {
         List<FrequencyBar> list = frequencyBarsFFTService.getFrequencyBarList();
         if(list.isEmpty() || isConnecting)
             return;
-        if(!socket.isConnected() || socket.isClosed()) {
+        if(!isSocketSetManually && (!socket.isConnected() || socket.isClosed())) {
             LOGGER.error("Broken connection. Reconnecting");
             try {
                 socket = createSocket();
@@ -107,10 +114,14 @@ public class LedDataSenderService {
             os.write(bytes);
         }catch (IOException e){
             LOGGER.error("Error writing to socket", e);
-            try{
-                socket = createSocket();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            if(isSocketSetManually)
+                throw new RuntimeException(e);
+            else {
+                try {
+                    socket = createSocket();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
         //LOGGER.info("Elapsed time {}", System.currentTimeMillis() - startTime);
