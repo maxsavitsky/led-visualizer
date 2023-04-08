@@ -8,6 +8,7 @@ import com.lazydash.audio.visualizer.spectrum.system.config.WindowProperty;
 import com.lazydash.audio.visualizer.spectrum.system.persistance.ConfigFilePersistence;
 import com.lazydash.audio.visualizer.spectrum.ui.code.spectral.SpectralAnimator;
 import com.lazydash.audio.visualizer.spectrum.ui.code.spectral.SpectralView;
+import com.maxsavitsky.visualizer.datasender.LedDataSenderService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

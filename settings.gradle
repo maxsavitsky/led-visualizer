@@ -6,3 +6,5 @@ rootProject.name = 'visualizer'
 include(':plugins')
 include(':core')
 include(':spectrum')
+include ':led-data-sender'
+

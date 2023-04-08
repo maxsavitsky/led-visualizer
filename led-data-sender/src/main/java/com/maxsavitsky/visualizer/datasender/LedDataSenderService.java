@@ -1,9 +1,7 @@
-package com.lazydash.audio.visualizer.spectrum;
+package com.maxsavitsky.visualizer.datasender;
 
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
-import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
-import com.lazydash.audio.visualizer.spectrum.ui.code.spectral.SpectralAnimator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +20,7 @@ public class LedDataSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LedDataSenderService.class);
     private final Executor executor = Executors.newSingleThreadExecutor();
 
-    private static final int FPS = SpectralAnimator.FPS;
+    private static final int FPS = 50;
 
     private boolean isPreviousDataWasEmpty = false;
 
