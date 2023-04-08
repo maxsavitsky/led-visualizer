@@ -1,7 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.ui.code.spectral;
 
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

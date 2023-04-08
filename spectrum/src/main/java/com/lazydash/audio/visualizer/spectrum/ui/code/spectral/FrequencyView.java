@@ -1,7 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.ui.code.spectral;
 
 
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 

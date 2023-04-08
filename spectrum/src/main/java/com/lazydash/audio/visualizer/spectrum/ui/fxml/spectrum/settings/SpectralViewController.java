@@ -1,7 +1,7 @@
 package com.lazydash.audio.visualizer.spectrum.ui.fxml.spectrum.settings;
 
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.AmplitudeWeightCalculator;
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -29,72 +29,72 @@ public class SpectralViewController {
     public Spinner<Integer> barGap;
 
     public void initialize() {
-        signalAmplificationValue.setText(String.valueOf(AppConfig.signalAmplification));
-        signalAmplification.setValue(AppConfig.signalAmplification);
+        signalAmplificationValue.setText(String.valueOf(CoreConfig.signalAmplification));
+        signalAmplification.setValue(CoreConfig.signalAmplification);
         signalAmplification.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                AppConfig.signalAmplification = newValue.intValue();
-                signalAmplificationValue.setText(String.valueOf(AppConfig.signalAmplification));
+                CoreConfig.signalAmplification = newValue.intValue();
+                signalAmplificationValue.setText(String.valueOf(CoreConfig.signalAmplification));
             }
         });
 
-        signalThresholdValue.setText(String.valueOf(AppConfig.signalThreshold));
-        signalThreshold.setValue(AppConfig.signalThreshold);
+        signalThresholdValue.setText(String.valueOf(CoreConfig.signalThreshold));
+        signalThreshold.setValue(CoreConfig.signalThreshold);
         signalThreshold.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                AppConfig.signalThreshold = newValue.intValue();
-                signalThresholdValue.setText(String.valueOf(AppConfig.signalThreshold));
+                CoreConfig.signalThreshold = newValue.intValue();
+                signalThresholdValue.setText(String.valueOf(CoreConfig.signalThreshold));
             }
         });
 
-        frequencyStart.getValueFactory().setValue(AppConfig.frequencyStart);
+        frequencyStart.getValueFactory().setValue(CoreConfig.frequencyStart);
         frequencyStart.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.frequencyStart = newValue;
+            CoreConfig.frequencyStart = newValue;
         });
 
-        frequencyCenter.getValueFactory().setValue(AppConfig.frequencyCenter);
+        frequencyCenter.getValueFactory().setValue(CoreConfig.frequencyCenter);
         frequencyCenter.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.frequencyCenter = newValue;
+            CoreConfig.frequencyCenter = newValue;
         });
 
-        frequencyEnd.getValueFactory().setValue(AppConfig.frequencyEnd);
+        frequencyEnd.getValueFactory().setValue(CoreConfig.frequencyEnd);
         frequencyEnd.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.frequencyEnd = newValue;
+            CoreConfig.frequencyEnd = newValue;
         });
 
-        octave.getValueFactory().setValue(AppConfig.octave);
+        octave.getValueFactory().setValue(CoreConfig.octave);
         octave.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.octave = newValue;
+            CoreConfig.octave = newValue;
         });
 
-        maxLevel.setValue(AppConfig.maxLevel);
+        maxLevel.setValue(CoreConfig.maxLevel);
         maxLevel.getItems().addAll(Arrays.asList("RMS", "Peak"));
 
-        weighting.setValue(AppConfig.weight);
+        weighting.setValue(CoreConfig.weight);
 
         AmplitudeWeightCalculator.WeightWindow[] weightWindows = AmplitudeWeightCalculator.WeightWindow.values();
         List<String> collect = Arrays.stream(weightWindows).map(Enum::toString).collect(Collectors.toList());
         weighting.getItems().addAll(collect);
 
-        minBarHeight.getValueFactory().setValue(AppConfig.minBarHeight);
+        minBarHeight.getValueFactory().setValue(CoreConfig.minBarHeight);
         minBarHeight.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.minBarHeight = newValue;
+            CoreConfig.minBarHeight = newValue;
         });
 
-        barGap.getValueFactory().setValue(AppConfig.barGap);
+        barGap.getValueFactory().setValue(CoreConfig.barGap);
         barGap.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.barGap = newValue;
+            CoreConfig.barGap = newValue;
         });
     }
 
 
     public void updateMaxLeve(ActionEvent actionEvent) {
-        AppConfig.maxLevel = maxLevel.getValue();
+        CoreConfig.maxLevel = maxLevel.getValue();
     }
 
     public void updateWeighting(ActionEvent actionEvent) {
-        AppConfig.weight = weighting.getValue();
+        CoreConfig.weight = weighting.getValue();
     }
 }

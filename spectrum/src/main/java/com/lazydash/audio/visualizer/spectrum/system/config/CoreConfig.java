@@ -1,6 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.system.config;
 
-public class AppConfig {
+public class CoreConfig {
     // Audio Input
     public static String inputDevice = "";
     public static int sampleRate = 48000;

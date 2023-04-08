@@ -6,9 +6,9 @@ import be.tarsos.dsp.util.fft.FFT;
 import be.tarsos.dsp.util.fft.HammingWindow;
 import be.tarsos.dsp.util.fft.HannWindow;
 import be.tarsos.dsp.util.fft.WindowFunction;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.AmplitudeWeightCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.OctaveGenerator;
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
@@ -61,10 +61,10 @@ public class FFTAudioProcessor implements AudioProcessor {
         }).toArray();
 
         List<Double> octaveFrequencies = OctaveGenerator.getOctaveFrequencies(
-                AppConfig.frequencyCenter,
-                AppConfig.octave,
-                AppConfig.frequencyStart,
-                AppConfig.frequencyEnd);
+                CoreConfig.frequencyCenter,
+                CoreConfig.octave,
+                CoreConfig.frequencyStart,
+                CoreConfig.frequencyEnd);
 
         double[] frequencyBins = new double[octaveFrequencies.size()];
         double[] frequencyAmplitudes = new double[octaveFrequencies.size()];
@@ -76,8 +76,8 @@ public class FFTAudioProcessor implements AudioProcessor {
             // get frequency bin
             frequencyBins[m] = octaveFrequencies.get(i);
 
-            double highLimit = OctaveGenerator.getHighLimit(octaveFrequencies.get(i), AppConfig.octave);
-            double lowLimit = OctaveGenerator.getLowLimit(octaveFrequencies.get(i), AppConfig.octave);
+            double highLimit = OctaveGenerator.getHighLimit(octaveFrequencies.get(i), CoreConfig.octave);
+            double lowLimit = OctaveGenerator.getLowLimit(octaveFrequencies.get(i), CoreConfig.octave);
 
             double step = 1;
             double k = lowLimit;
@@ -90,10 +90,10 @@ public class FFTAudioProcessor implements AudioProcessor {
             }
 
             frequencyAmplitudes[m] = Math.sqrt(frequencyAmplitudes[m]); // square root the energy
-            frequencyAmplitudes[m] = AppConfig.maxLevel.equals("RMS") ? Math.sqrt(Math.pow(frequencyAmplitudes[m], 2) / 2) : frequencyAmplitudes[m]; // calculate the RMS of the amplitude
+            frequencyAmplitudes[m] = CoreConfig.maxLevel.equals("RMS") ? Math.sqrt(Math.pow(frequencyAmplitudes[m], 2) / 2) : frequencyAmplitudes[m]; // calculate the RMS of the amplitude
             frequencyAmplitudes[m] = (20 * Math.log10(frequencyAmplitudes[m])); // convert to logarithmic scale
 
-            AmplitudeWeightCalculator.WeightWindow weightWindow = AmplitudeWeightCalculator.WeightWindow.valueOf(AppConfig.weight);
+            AmplitudeWeightCalculator.WeightWindow weightWindow = AmplitudeWeightCalculator.WeightWindow.valueOf(CoreConfig.weight);
             frequencyAmplitudes[m] = (frequencyAmplitudes[m] + AmplitudeWeightCalculator.getDbWeight(frequencyBins[m], weightWindow)); // use weight to adjust the spectrum
 
             m++;

@@ -2,9 +2,8 @@ package com.lazydash.audio.visualizer.spectrum;
 
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.ui.code.spectral.SpectralAnimator;
-import javafx.animation.AnimationTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,15 +11,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class LedDataSenderService {
 
@@ -92,11 +87,11 @@ public class LedDataSenderService {
         int argsCount = 1 + sz;
         bytes[6] = (byte) (0);
         bytes[7] = (byte) (argsCount & 0xFF);
-        bytes[8] = (byte) ((AppConfig.saturation / 100.0) * 255); // saturation
+        bytes[8] = (byte) 255; // saturation
         boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
-            var hueVal = bar.getColor().getHue() / 360.0;
+            var hueVal = bar.getColorHue() / 360.0;
             bytes[9 + i] = (byte) (hueVal * 255);
             areAllEmpty &= (1 - hueVal) <= 0.02;
         }

@@ -1,9 +1,9 @@
 package com.lazydash.audio.visualizer.spectrum;
 
-import com.lazydash.audio.visualizer.spectrum.core.audio.TarsosAudioEngine;
+import com.lazydash.audio.visualizer.spectrum.core.TarsosAudioEngine;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
 import com.lazydash.audio.visualizer.spectrum.plugin.PluginSystem;
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.system.config.WindowProperty;
 import com.lazydash.audio.visualizer.spectrum.system.persistance.ConfigFilePersistence;
 import com.lazydash.audio.visualizer.spectrum.ui.code.spectral.SpectralAnimator;
@@ -18,10 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 /*
 Intellij settings:
@@ -61,7 +57,7 @@ public class Main extends Application {
 
         // create
         ConfigFilePersistence configFilePersistence = new ConfigFilePersistence();
-        configFilePersistence.load(AppConfig.class, "./application.properties");
+        configFilePersistence.load(CoreConfig.class, "./application.properties");
         TarsosAudioEngine tarsosAudioEngine = new TarsosAudioEngine();
 
         SpectralView spectralView = new SpectralView();
@@ -101,9 +97,9 @@ public class Main extends Application {
 
     private void wirePrimaryStage(Stage primaryStage, ConfigFilePersistence configFilePersistence, TarsosAudioEngine tarsosAudioEngine, LedDataSenderService dataSenderService, SpectralAnimator animator) {
         primaryStage.setOnCloseRequest(event -> {
-            AppConfig.windowHeight = primaryStage.getHeight();
-            AppConfig.windowWidth = primaryStage.getWidth();
-            configFilePersistence.persist(AppConfig.class, "./application.properties");
+            CoreConfig.windowHeight = primaryStage.getHeight();
+            CoreConfig.windowWidth = primaryStage.getWidth();
+            configFilePersistence.persist(CoreConfig.class, "./application.properties");
             PluginSystem.getInstance().stopAllPlugins();
             tarsosAudioEngine.stop();
             dataSenderService.stop();
@@ -142,8 +138,8 @@ public class Main extends Application {
         // setup
         stage.setTitle("Visualiser");
 
-        stage.setWidth(AppConfig.windowWidth);
-        stage.setHeight(AppConfig.windowHeight);
+        stage.setWidth(CoreConfig.windowWidth);
+        stage.setHeight(CoreConfig.windowHeight);
 
         stage.setScene(scene);
     }

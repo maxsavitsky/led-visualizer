@@ -4,4 +4,5 @@
 
 rootProject.name = 'visualizer'
 include(':plugins')
+include(':core')
 include(':spectrum')

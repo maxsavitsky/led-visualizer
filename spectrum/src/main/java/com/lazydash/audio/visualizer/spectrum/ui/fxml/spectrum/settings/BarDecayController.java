@@ -1,6 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.ui.fxml.spectrum.settings;
 
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -21,41 +21,41 @@ public class BarDecayController {
     public ComboBox<String> smoothnessType;
 
     public void initialize() {
-        decayTimeValue.setText(String.valueOf(AppConfig.millisToZero));
-        pixelsPerSecondDecay.setValue(AppConfig.millisToZero);
+        decayTimeValue.setText(String.valueOf(CoreConfig.millisToZero));
+        pixelsPerSecondDecay.setValue(CoreConfig.millisToZero);
         pixelsPerSecondDecay.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                AppConfig.millisToZero = newValue.intValue();
+                CoreConfig.millisToZero = newValue.intValue();
                 decayTimeValue.setText(String.valueOf(newValue.intValue()));
             }
         });
 
-        decayAccelerationValue.setText(String.valueOf(AppConfig.accelerationFactor));
-        decayAcceleration.setValue(AppConfig.accelerationFactor);
+        decayAccelerationValue.setText(String.valueOf(CoreConfig.accelerationFactor));
+        decayAcceleration.setValue(CoreConfig.accelerationFactor);
         decayAcceleration.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                AppConfig.accelerationFactor = newValue.intValue();
-                decayAccelerationValue.setText(String.valueOf(AppConfig.accelerationFactor));
+                CoreConfig.accelerationFactor = newValue.intValue();
+                decayAccelerationValue.setText(String.valueOf(CoreConfig.accelerationFactor));
             }
         });
 
-        timeFilter.getValueFactory().setValue(AppConfig.timeFilterSize);
+        timeFilter.getValueFactory().setValue(CoreConfig.timeFilterSize);
         timeFilter.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.timeFilterSize = newValue;
+            CoreConfig.timeFilterSize = newValue;
         });
 
         List<String> smoothnessTypeList = Arrays.asList("SMA", "WMA", "EMA");
         smoothnessType.getItems().addAll(smoothnessTypeList);
-        smoothnessType.setValue(AppConfig.smoothnessType);
+        smoothnessType.setValue(CoreConfig.smoothnessType);
         smoothnessType.valueProperty().addListener((observable, oldValue, newValue) -> {
-            AppConfig.smoothnessType = newValue;
+            CoreConfig.smoothnessType = newValue;
         });
 
     }
 
     public void updateSmoothnessType(ActionEvent actionEvent) {
-        AppConfig.smoothnessType = smoothnessType.getValue();
+        CoreConfig.smoothnessType = smoothnessType.getValue();
     }
 }

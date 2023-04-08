@@ -1,6 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.core.algorithm;
 
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,7 +10,7 @@ public class FFTTimeFilter {
 
 
     public double[] filter(double[] amps) {
-        int timeFilterSize = AppConfig.timeFilterSize;
+        int timeFilterSize = CoreConfig.timeFilterSize;
 
         if (timeFilterSize < 2) {
             return amps;
@@ -32,7 +32,7 @@ public class FFTTimeFilter {
         historyAmps.poll();
         historyAmps.offer(amps);
 
-        return switch (AppConfig.smoothnessType) {
+        return switch (CoreConfig.smoothnessType) {
             case "WMA" -> filterWma(amps);
             case "EMA" -> filterEma(amps);
             default -> filterSma(amps);

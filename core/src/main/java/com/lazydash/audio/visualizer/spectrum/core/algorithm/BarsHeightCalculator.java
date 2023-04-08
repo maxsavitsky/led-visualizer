@@ -1,6 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum.core.algorithm;
 
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 
 public class BarsHeightCalculator {
     private long oldTime = System.nanoTime();
@@ -16,7 +16,7 @@ public class BarsHeightCalculator {
             return convertDbToPixels(newAmplitudes);
         }
 
-        int millisToZero = AppConfig.millisToZero;
+        int millisToZero = CoreConfig.millisToZero;
         double secondsPassed = getMillisPassed();
 
         double[] pixelAmplitudes = convertDbToPixels(newAmplitudes);
@@ -26,9 +26,9 @@ public class BarsHeightCalculator {
     }
 
     private double[] convertDbToPixels(double[] dbAmplitude) {
-        int signalThreshold = AppConfig.signalThreshold;
-        double maxBarHeight = AppConfig.maxBarHeight;
-        int signalAmplification = AppConfig.signalAmplification;
+        int signalThreshold = CoreConfig.signalThreshold;
+        double maxBarHeight = CoreConfig.maxBarHeight;
+        int signalAmplification = CoreConfig.signalAmplification;
 
         double[] pixelsAmplitude = new double[dbAmplitude.length];
 
@@ -49,8 +49,8 @@ public class BarsHeightCalculator {
 
     private double[] decayPixelsAmplitudes(double[] oldAmplitudes, double[] newAmplitudes, double millisToZero, double secondsPassed) {
         double[] processedAmplitudes = new double[newAmplitudes.length];
-        double maxBarHeight = AppConfig.maxBarHeight;
-        int minBarHeight = AppConfig.minBarHeight;
+        double maxBarHeight = CoreConfig.maxBarHeight;
+        int minBarHeight = CoreConfig.minBarHeight;
 
         for (int i = 0; i < processedAmplitudes.length; i++) {
             double oldHeight = oldAmplitudes[i];
@@ -62,7 +62,7 @@ public class BarsHeightCalculator {
             if (newHeight < oldHeight - dbPerSecondDecay) {
                 double decaySize = dbPerSecondDecay;
 
-                double accelerationStep = (1d / AppConfig.accelerationFactor) * decaySize;
+                double accelerationStep = (1d / CoreConfig.accelerationFactor) * decaySize;
                 if (oldDecayDecelSize[i] + accelerationStep < dbPerSecondDecay) {
                     oldDecayDecelSize[i] = oldDecayDecelSize[i] + accelerationStep;
                     decaySize = oldDecayDecelSize[i];

@@ -1,15 +1,13 @@
 package com.lazydash.audio.visualizer.spectrum.ui.code.spectral;
 
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
-import com.lazydash.audio.visualizer.spectrum.system.config.AppConfig;
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.system.config.WindowProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.StrokeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,26 +26,26 @@ public class SpectralView extends GridPane {
         this.getRowConstraints().add(rowConstraintsAmplitudes);
 
         RowConstraints rowConstraintsHz = new RowConstraints();
-        rowConstraintsHz.setMinHeight(AppConfig.hzLabelHeight);
+        rowConstraintsHz.setMinHeight(CoreConfig.hzLabelHeight);
         this.getRowConstraints().add(rowConstraintsHz);
 
 
 
         WindowProperty.heightProperty.addListener((observable, oldValue, newValue) -> {
-            AppConfig.maxBarHeight = newValue.intValue() - AppConfig.hzLabelHeight;
+            CoreConfig.maxBarHeight = newValue.intValue() - CoreConfig.hzLabelHeight;
         });
 
         WindowProperty.widthProperty.addListener((observable, oldValue, newValue) -> {
             this.setPrefWidth(newValue.doubleValue());
             frequencyViewList.forEach(frequencyView -> {
-                int rectangleWidth = (int) (this.getWidth() / frequencyViewList.size()) - AppConfig.barGap;
+                int rectangleWidth = (int) (this.getWidth() / frequencyViewList.size()) - CoreConfig.barGap;
                 frequencyView.getRectangle().setWidth(rectangleWidth);
             });
         });
     }
 
     public void updateState(List<FrequencyBar> frequencyBarList) {
-        this.setHgap(AppConfig.barGap);
+        this.setHgap(CoreConfig.barGap);
 
         if (frequencyBarList.size() != frequencyViewList.size()) {
             createBars(frequencyBarList);
@@ -67,11 +65,11 @@ public class SpectralView extends GridPane {
 
             frequencyView.setHzValue(frequencyBar.getHz());
 
-            frequencyView.getRectangle().setFill(frequencyBar.getColor());
+            frequencyView.getRectangle().setFill(Color.hsb(frequencyBar.getColorHue(), 1.0, 1.0));
             // rounding is needed because of the subpixel rendering
             frequencyView.getRectangle().setHeight(Math.round(frequencyBar.getHeight()));
 
-            int rectangleWidth = (int) (this.getWidth() / frequencyViewList.size()) - AppConfig.barGap;
+            int rectangleWidth = (int) (this.getWidth() / frequencyViewList.size()) - CoreConfig.barGap;
             frequencyView.getRectangle().setWidth(rectangleWidth);
         }
     }

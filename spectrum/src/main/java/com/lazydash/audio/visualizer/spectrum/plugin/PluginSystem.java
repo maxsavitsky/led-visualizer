@@ -1,6 +1,7 @@
 package com.lazydash.audio.visualizer.spectrum.plugin;
 
-import com.lazydash.audio.visualizer.spectrum.core.audio.TarsosAudioEngine;
+import com.lazydash.audio.visualizer.spectrum.core.TarsosAudioEngine;
+import com.lazydash.audio.visualizer.spectrum.core.audio.TarsosCoreAudioEngine;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
 import com.lazydash.audio.visualizer.spectrum.ui.fxml.spectrum.SettingsController;
 import javafx.scene.Parent;

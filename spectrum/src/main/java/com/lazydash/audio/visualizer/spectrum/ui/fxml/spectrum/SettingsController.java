@@ -21,9 +21,7 @@ public class SettingsController {
 
     public void initialize() {
         Map<String, Parent> map = new LinkedHashMap<>();
-        map.put("Audio input", loadFxml("/ui/fxml/spectrum/settings/audio_input.fxml"));
         map.put("Spectral view", loadFxml("/ui/fxml/spectrum/settings/spectral_view.fxml"));
-        map.put("Spectral color", loadFxml("/ui/fxml/spectrum/settings/spectral_color.fxml"));
         map.put("Bar decay", loadFxml("/ui/fxml/spectrum/settings/bar_decay.fxml"));
 
         map.keySet().forEach((title) -> {
