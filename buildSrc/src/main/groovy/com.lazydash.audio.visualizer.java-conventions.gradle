@@ -4,7 +4,6 @@
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
 }
 
 repositories {
@@ -15,18 +14,6 @@ repositories {
 
     maven {
         url = uri('https://mvn.0110.be/releases')
-    }
-}
-
-group = 'com.lazydash.audio.visualizer'
-version = '1.0.0-SNAPSHOT'
-java.sourceCompatibility = JavaVersion.VERSION_17
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
     }
 }
 
