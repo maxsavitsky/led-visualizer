@@ -32,11 +32,14 @@ public class FFTTimeFilter {
         historyAmps.poll();
         historyAmps.offer(amps);
 
-        return switch (CoreConfig.smoothnessType) {
-            case "WMA" -> filterWma(amps);
-            case "EMA" -> filterEma(amps);
-            default -> filterSma(amps);
-        };
+        switch (CoreConfig.smoothnessType) {
+            case "WMA":
+                return filterWma(amps);
+            case "EMA":
+                return filterEma(amps);
+            default:
+                return filterSma(amps);
+        }
 
     }
 
