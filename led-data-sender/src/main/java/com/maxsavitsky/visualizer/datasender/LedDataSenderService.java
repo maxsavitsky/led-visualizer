@@ -2,8 +2,6 @@ package com.maxsavitsky.visualizer.datasender;
 
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 public class LedDataSenderService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LedDataSenderService.class);
     private final Executor executor = Executors.newSingleThreadExecutor();
 
     private static final int FPS = 50;
@@ -71,7 +68,6 @@ public class LedDataSenderService {
         if(list.isEmpty() || isConnecting)
             return;
         if(!isSocketSetManually && (!socket.isConnected() || socket.isClosed())) {
-            LOGGER.error("Broken connection. Reconnecting");
             try {
                 socket = createSocket();
             } catch (IOException e) {
@@ -113,7 +109,6 @@ public class LedDataSenderService {
             OutputStream os = socket.getOutputStream();
             os.write(bytes);
         }catch (IOException e){
-            LOGGER.error("Error writing to socket", e);
             if(isSocketSetManually)
                 throw new RuntimeException(e);
             else {
@@ -128,14 +123,12 @@ public class LedDataSenderService {
     }
 
     private Socket createSocket() throws IOException {
-        LOGGER.info("connecting to socket");
         isConnecting = true;
         Socket s = new Socket();
         s.setKeepAlive(true);
         //s.setTcpNoDelay(true);
         s.connect(new InetSocketAddress("192.168.100.80", 80));
         isConnecting = false;
-        LOGGER.info("connected, {}", s.getOutputStream());
         return s;
     }
 }

@@ -1,6 +1,7 @@
 package com.lazydash.audio.visualizer.spectrum.core.audio;
 
 import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.io.TarsosDSPAudioInputStream;
 import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
 import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 
@@ -19,10 +20,7 @@ public class TarsosCoreAudioEngine {
         return fttListenerList;
     }
 
-    public void start(AudioInputStream stream) {
-        AudioFormat audioFormat = stream.getFormat();
-
-        float sampleRate = audioFormat.getSampleRate();
+    public void start(TarsosDSPAudioInputStream inputStream, int sampleRate){
         int audioWindowSize = CoreConfig.audioWindowSize;
         int audioWindowNumber = CoreConfig.audioWindowNumber;
 
@@ -30,16 +28,20 @@ public class TarsosCoreAudioEngine {
         int bufferMax = (int) buffer * audioWindowNumber;
         int bufferOverlap = bufferMax - (int) buffer;
 
-        JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
-
-        dispatcher = new AudioDispatcher(audioStream, bufferMax, bufferOverlap);
+        dispatcher = new AudioDispatcher(inputStream, bufferMax, bufferOverlap);
         //dispatcher.addAudioProcessor(new AudioEngineRestartProcessor(this));
         //dispatcher.addAudioProcessor(new MultichannelToMono(audioFormat.getChannels(), true));
-        dispatcher.addAudioProcessor(new FFTAudioProcessor(audioFormat, fttListenerList));
+        dispatcher.addAudioProcessor(new FFTAudioProcessor(fttListenerList, sampleRate));
 
         // run the dispatcher
         dispatcher.run();
+    }
 
+    public void start(AudioInputStream stream) {
+        AudioFormat audioFormat = stream.getFormat();
+
+        float sampleRate = audioFormat.getSampleRate();
+        start(new JVMAudioInputStream(stream), (int) sampleRate);
     }
 
     public void stop() {

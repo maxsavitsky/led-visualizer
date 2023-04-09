@@ -5,8 +5,6 @@ import com.lazydash.audio.visualizer.spectrum.core.algorithm.FFTTimeFilter;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsCreator;
 import com.lazydash.audio.visualizer.spectrum.core.audio.FFTListener;
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
  *  - previous bar heights that are used in bad decay calculation
  */
 public class FrequencyBarsFFTService implements FFTListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FrequencyBarsFFTService.class);
     private long oldTime = System.currentTimeMillis();
 
     // the hzBins and the amplitudes come in pairs and access to them needs to be synchronized

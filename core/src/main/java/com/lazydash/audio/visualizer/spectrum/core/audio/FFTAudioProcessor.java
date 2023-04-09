@@ -3,36 +3,30 @@ package com.lazydash.audio.visualizer.spectrum.core.audio;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.util.fft.FFT;
-import be.tarsos.dsp.util.fft.HammingWindow;
 import be.tarsos.dsp.util.fft.HannWindow;
 import be.tarsos.dsp.util.fft.WindowFunction;
 import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.AmplitudeWeightCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.OctaveGenerator;
 import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.AudioFormat;
 import java.util.List;
 import java.util.stream.IntStream;
 
 
 public class FFTAudioProcessor implements AudioProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FFTAudioProcessor.class);
     long oldTime = System.currentTimeMillis();
 
-    private List<FFTListener> listenerList;
-    private AudioFormat audioFormat;
-    private UnivariateInterpolator interpolator = new SplineInterpolator();
-    private WindowFunction windowFunction = new HannWindow();
-    private double windowCorrectionFactor = 2.00;
+    private final List<FFTListener> listenerList;
+    private final int sampleRate;
+    private final UnivariateInterpolator interpolator = new SplineInterpolator();
+    private final WindowFunction windowFunction = new HannWindow();
+    private final double windowCorrectionFactor = 2.00;
 
-    FFTAudioProcessor(AudioFormat audioFormat, List<FFTListener> listenerList) {
-        this.audioFormat = audioFormat;
+    FFTAudioProcessor(List<FFTListener> listenerList, int sampleRate) {
+        this.sampleRate = sampleRate;
         this.listenerList = listenerList;
     }
 
@@ -52,7 +46,7 @@ public class FFTAudioProcessor implements AudioProcessor {
         fft.forwardTransform(transformBuffer);
         fft.modulus(transformBuffer, amplitudes);
 
-        double[] bins = IntStream.range(0, transformBuffer.length / 2).mapToDouble(i -> fft.binToHz(i, audioFormat.getSampleRate())).toArray();
+        double[] bins = IntStream.range(0, transformBuffer.length / 2).mapToDouble(i -> fft.binToHz(i, sampleRate)).toArray();
         double[] doublesAmplitudes = IntStream.range(0, amplitudes.length).mapToDouble(value -> {
             float amplitude = amplitudes[value];
             amplitude = (amplitude / amplitudes.length); // normalize (n/2)
