@@ -17,7 +17,9 @@ public class LedDataSenderService {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
 
-    private static final int FPS = 50;
+    public static final int DEFAULT_FPS = 50;
+
+    private final int FPS;
 
     private boolean isPreviousDataWasEmpty = false;
 
@@ -29,8 +31,13 @@ public class LedDataSenderService {
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-    public LedDataSenderService(FrequencyBarsFFTService frequencyBarsFFTService) {
+    public LedDataSenderService(FrequencyBarsFFTService frequencyBarsFFTService){
+        this(frequencyBarsFFTService, DEFAULT_FPS);
+    }
+
+    public LedDataSenderService(FrequencyBarsFFTService frequencyBarsFFTService, int fps) {
         this.frequencyBarsFFTService = frequencyBarsFFTService;
+        this.FPS = fps;
     }
 
     public void setSocket(Socket socket){
