@@ -41,3 +41,4 @@ application.properties
 /buildSrc/.gradle/
 /buildSrc/build/
 /.gradle/
+/spectrum/build/
