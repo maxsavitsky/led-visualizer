@@ -134,7 +134,7 @@ public class LedDataSenderService {
         Socket s = new Socket();
         s.setKeepAlive(true);
         //s.setTcpNoDelay(true);
-        s.connect(new InetSocketAddress("192.168.100.80", 80));
+        s.connect(new InetSocketAddress("192.168.100.90", 80));
         isConnecting = false;
         return s;
     }

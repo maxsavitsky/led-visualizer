@@ -28,7 +28,11 @@ Intellij settings:
 public class Main extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
+    private static boolean isNativeReceive = false;
+
     public static void main(String[] args) {
+        if(args.length > 0 && args[0].equals("true"))
+            isNativeReceive = true;
         try {
             launch(args);
 
@@ -84,7 +88,7 @@ public class Main extends Application {
         // run
         stage.show();
         spectralAnimator.play();
-        tarsosAudioEngine.start();
+        tarsosAudioEngine.start(isNativeReceive);
         dataSenderService.start();
     }
 

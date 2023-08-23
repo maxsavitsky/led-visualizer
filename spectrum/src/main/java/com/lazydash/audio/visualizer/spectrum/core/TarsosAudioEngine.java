@@ -24,18 +24,18 @@ public class TarsosAudioEngine {
     private Socket currentSocket;
     private Thread audioThread;
 
-    public void start(){
+    public void start(boolean isNativeReceive){
         AudioFormat audioFormat = getAudioFormat();
         audioThread = new Thread(()->{
             try {
-                serverSocket = new ServerSocket(13485);
+                serverSocket = new ServerSocket(isNativeReceive ? 13486 : 13485);
                 while(!serverSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
                     LOGGER.info("waiting for socket " + serverSocket.isClosed() );
                     currentSocket = serverSocket.accept();
                     currentSocket.setKeepAlive(true);
                     try (InputStream is = currentSocket.getInputStream();
-                         NetworkInputStream nis = new NetworkInputStream(is);
-                         AudioInputStream stream = new AudioInputStream(nis, audioFormat, AudioSystem.NOT_SPECIFIED)) {
+                         InputStream audioStream = isNativeReceive ? is : new NetworkInputStream(is);
+                         AudioInputStream stream = new AudioInputStream(audioStream, audioFormat, AudioSystem.NOT_SPECIFIED)) {
                         coreAudioEngine.start(stream);
                     }
                 }
