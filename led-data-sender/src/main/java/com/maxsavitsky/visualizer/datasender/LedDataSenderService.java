@@ -60,6 +60,7 @@ public class LedDataSenderService {
     public void stop(){
         if(!isSocketSetManually && socket != null) {
             try {
+                sendBytes(new byte[]{0, 1, (byte) 254});
                 socket.shutdownInput();
                 socket.shutdownOutput();
                 socket.close();
@@ -82,25 +83,19 @@ public class LedDataSenderService {
             }
         }
         int sz = Math.min(150, list.size());
-        byte[] bytes = new byte[9 + sz];
+        byte[] bytes = new byte[4 + sz];
         int len = bytes.length - 2;
         //LOGGER.info(String.valueOf(len));
         bytes[0] = (byte) (len >> 8);
         bytes[1] = (byte) (len & 0xFF);
-        bytes[2] = 7; // command index
-        bytes[3] = 0; // effect number (not for us)
-        bytes[4] = 10; // speed (not for us)
-        bytes[5] = 0; // brightness
+        bytes[2] = 7;
         // args
-        int argsCount = 1 + sz;
-        bytes[6] = (byte) (0);
-        bytes[7] = (byte) (argsCount & 0xFF);
-        bytes[8] = (byte) 255; // saturation
+        bytes[3] = (byte) 255; // saturation
         boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
             var hueVal = bar.getColorHue() / 360.0;
-            bytes[9 + i] = (byte) (hueVal * 255);
+            bytes[4 + i] = (byte) (hueVal * 255);
             areAllEmpty &= (1 - hueVal) <= 0.02;
         }
         if (areAllEmpty && isPreviousDataWasEmpty) return; // just skip
@@ -134,7 +129,7 @@ public class LedDataSenderService {
         Socket s = new Socket();
         s.setKeepAlive(true);
         //s.setTcpNoDelay(true);
-        s.connect(new InetSocketAddress("192.168.100.90", 80));
+        s.connect(new InetSocketAddress("192.168.100.90", 81));
         isConnecting = false;
         return s;
     }
