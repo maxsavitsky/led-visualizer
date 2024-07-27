@@ -110,7 +110,7 @@ public class LedDataSenderService {
 
     private void sendBytes(byte[] bytes) {
         long startTime = System.currentTimeMillis();
-        System.out.println(bytes.length);
+        //System.out.println(bytes.length);
         try {
             OutputStream os = socket.getOutputStream();
             os.write(bytes);
