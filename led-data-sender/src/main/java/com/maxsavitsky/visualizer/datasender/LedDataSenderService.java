@@ -1,7 +1,9 @@
 package com.maxsavitsky.visualizer.datasender;
 
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +19,7 @@ public class LedDataSenderService {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
 
-    public static final int DEFAULT_FPS = 50;
+    public static final int DEFAULT_FPS = 30;
 
     private final int FPS;
 
@@ -82,20 +84,21 @@ public class LedDataSenderService {
                 throw new RuntimeException(e);
             }
         }
-        int sz = Math.min(150, list.size());
-        byte[] bytes = new byte[4 + sz];
+        int sz = Math.min(CoreConfig.ledCount, list.size());
+        byte[] bytes = new byte[5 + sz];
         int len = bytes.length - 2;
         //LOGGER.info(String.valueOf(len));
         bytes[0] = (byte) (len >> 8);
         bytes[1] = (byte) (len & 0xFF);
         bytes[2] = 7;
         // args
-        bytes[3] = (byte) 255; // saturation
+        bytes[3] = (byte) 255; // hue (ignored)
+        bytes[4] = (byte) 255; // saturation
         boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
             var hueVal = bar.getColorHue() / 360.0;
-            bytes[4 + i] = (byte) (hueVal * 255);
+            bytes[5 + i] = (byte) (hueVal * 255);
             areAllEmpty &= (1 - hueVal) <= 0.02;
         }
         if (areAllEmpty && isPreviousDataWasEmpty) return; // just skip
@@ -107,6 +110,7 @@ public class LedDataSenderService {
 
     private void sendBytes(byte[] bytes) {
         long startTime = System.currentTimeMillis();
+        System.out.println(bytes.length);
         try {
             OutputStream os = socket.getOutputStream();
             os.write(bytes);

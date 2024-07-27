@@ -61,7 +61,7 @@
         <Label text="Octave (1/n):" GridPane.rowIndex="$row.increment" GridPane.columnIndex="0"/>
         <Spinner fx:id="octave" editable="true" GridPane.rowIndex="$row.value" GridPane.columnIndex="1">
             <valueFactory>
-                <SpinnerValueFactory.IntegerSpinnerValueFactory min="1" max="24" amountToStepBy="1"/>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory min="1" max="36" amountToStepBy="1"/>
             </valueFactory>
         </Spinner>
 

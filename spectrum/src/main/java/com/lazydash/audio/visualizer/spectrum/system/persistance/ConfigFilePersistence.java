@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -67,6 +68,8 @@ public class ConfigFilePersistence {
 
     private void setPropertyOnFiled(Properties appProps, Field field) {
         try {
+            if (Modifier.isFinal(field.getModifiers()))
+                return;
             field.setAccessible(true);
             switch (field.getType().toString()) {
                 case "class java.lang.String":

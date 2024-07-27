@@ -30,4 +30,7 @@ public class CoreConfig {
     // window
     public static double windowWidth = 1700;
     public static double windowHeight = 400;
+
+    public static final int MAX_LED_COUNT = 284;
+    public static int ledCount = 284;
 }

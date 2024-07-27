@@ -32,4 +32,8 @@ public class FrequencyBar {
     public double getColorHue() {
         return colorHue;
     }
+
+    public double getHeightRatio() {
+        return height / CoreConfig.maxBarHeight;
+    }
 }
