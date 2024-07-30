@@ -23,6 +23,9 @@
         <Label text="Color of bars based on " GridPane.rowIndex="$row.increment" GridPane.columnIndex="0"/>
         <ComboBox fx:id="barsColor" onAction="#updateBarsColor" GridPane.rowIndex="$row.value" GridPane.columnIndex="1"/>
 
+        <Label text="Show color map window (for music mood)" GridPane.rowIndex="$row.increment" GridPane.columnIndex="0"/>
+        <CheckBox fx:id="showWindowCheckBox" onAction="#updateShowColorMap" GridPane.rowIndex="$row.value" GridPane.columnIndex="1"/>
+
     </GridPane>
 
 </VBox>

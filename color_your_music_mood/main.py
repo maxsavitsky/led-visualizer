@@ -14,9 +14,9 @@ import datetime
 import signal
 import pyaudio
 import struct
-from yeelight import Bulb
 import cv2
 import color_map_2d
+import matplotlib.pyplot as plt
 
 from py4j.java_gateway import JavaGateway
 
@@ -177,7 +177,22 @@ def record_audio(block_size, entry_point, fs=8000):
             color = numpy.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
             entry_point.newColorDetected(int(color[2]), int(color[1]), int(color[0]))
 
-            cv2.waitKey(10)
+            if entry_point.showWindow():
+                radius = 20
+                emo_map_img_2 = emo_map_img.copy()
+                emo_map_img_2 = cv2.circle(emo_map_img_2, (x, y),
+                                           radius,
+                                           (int(color[0]), int(color[1]),
+                                            int(color[2])), -1)
+                emo_map_img_2 = cv2.circle(emo_map_img_2, (x, y),
+                                           radius, (255, 255, 255), 2)
+                #plt.imshow(emo_map_img_2)
+                #plt.show(block=False)
+                cv2.imshow('Emotion Color Map', emo_map_img_2)
+                cv2.waitKey(1)
+            else:
+                cv2.destroyAllWindows()
+
             count += 1
 
 

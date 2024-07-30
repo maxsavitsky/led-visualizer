@@ -1,5 +1,6 @@
 package com.lazydash.audio.visualizer.spectrum;
 
+import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
 import com.lazydash.audio.visualizer.spectrum.core.TarsosAudioEngine;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsColorCalculator;
 import javafx.scene.paint.Color;
@@ -49,6 +50,10 @@ public class MusicMoodRecognition {
         AudioFormat audioFormat = new AudioFormat(8000, 16, 1, true, false);
         var stream = AudioSystem.getAudioInputStream(audioFormat, sourceStream);
         return new Reader(stream);
+    }
+
+    public boolean showWindow() {
+        return CoreConfig.barsColorMode == 1 && CoreConfig.showColorMapWindow;
     }
 
     public void start() {

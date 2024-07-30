@@ -21,6 +21,7 @@ public class CoreConfig {
     public static int hzLabelHeight = 20;
 
     public static int barsColorMode = 0;
+    public static boolean showColorMapWindow = true;
 
 
     // bar acceleration
