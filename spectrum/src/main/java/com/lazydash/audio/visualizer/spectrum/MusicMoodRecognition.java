@@ -72,7 +72,7 @@ public class MusicMoodRecognition {
         builder.directory(new File("color_your_music_mood"));
         builder.command("c:\\Program Files\\Python\\Python368\\python.exe", "main.py");
         try {
-            builder.inheritIO().start();
+            builder.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
