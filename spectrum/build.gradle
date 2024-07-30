@@ -37,6 +37,9 @@ dependencies {
     // https://mvnrepository.com/artifact/net.sf.py4j/py4j
     implementation 'net.sf.py4j:py4j:0.10.9.7'
 
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation 'commons-io:commons-io:2.16.1'
+
     testImplementation 'junit:junit:4.13.2'
 }
 

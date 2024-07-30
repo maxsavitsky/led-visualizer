@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioSystem;
 import java.io.IOException;
 
 /*
@@ -64,7 +65,6 @@ public class Main extends Application {
         // create
         ConfigFilePersistence configFilePersistence = new ConfigFilePersistence();
         configFilePersistence.load(CoreConfig.class, "./application.properties");
-        TarsosAudioEngine tarsosAudioEngine = new TarsosAudioEngine();
 
         SpectralView spectralView = new SpectralView();
         Scene scene = createScene(spectralView);
@@ -76,6 +76,9 @@ public class Main extends Application {
         SpectralAnimator spectralAnimator = new SpectralAnimator(spectralFFTService, spectralView);
 
         LedDataSenderService dataSenderService = new LedDataSenderService(spectralFFTService);
+
+        TarsosAudioEngine tarsosAudioEngine = new TarsosAudioEngine();
+        MusicMoodRecognition moodRecognition = new MusicMoodRecognition(barsColorCalculator, tarsosAudioEngine);
 
         // setup
         spectralView.configure();
@@ -93,6 +96,7 @@ public class Main extends Application {
         spectralAnimator.play();
         tarsosAudioEngine.start(isNativeReceive);
         dataSenderService.start();
+        moodRecognition.start();
     }
 
     private void wireSettingsStage(Stage settingsStage, Scene rootScene) {

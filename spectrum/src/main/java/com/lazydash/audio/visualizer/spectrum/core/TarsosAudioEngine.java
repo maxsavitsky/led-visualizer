@@ -2,17 +2,18 @@ package com.lazydash.audio.visualizer.spectrum.core;
 
 import com.lazydash.audio.visualizer.spectrum.core.audio.FFTListener;
 import com.lazydash.audio.visualizer.spectrum.core.audio.TarsosCoreAudioEngine;
+import org.apache.commons.io.input.TeeInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class TarsosAudioEngine {
 
@@ -24,8 +25,19 @@ public class TarsosAudioEngine {
     private Socket currentSocket;
     private Thread audioThread;
 
+    private final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    private PipedInputStream splittedInputStream = null;
+
+    public CountDownLatch getCountDownLatch() {
+        return countDownLatch;
+    }
+
+    public void setSplittedInputStream(PipedInputStream splittedInputStream) {
+        this.splittedInputStream = splittedInputStream;
+    }
+
     public void start(boolean isNativeReceive){
-        AudioFormat audioFormat = getAudioFormat();
         audioThread = new Thread(()->{
             try {
                 serverSocket = new ServerSocket(isNativeReceive ? 13486 : 13485);
@@ -33,10 +45,10 @@ public class TarsosAudioEngine {
                     LOGGER.info("waiting for socket " + serverSocket.isClosed() );
                     currentSocket = serverSocket.accept();
                     currentSocket.setKeepAlive(true);
-                    try (InputStream is = currentSocket.getInputStream();
-                         InputStream audioStream = isNativeReceive ? is : new NetworkInputStream(is);
-                         AudioInputStream stream = new AudioInputStream(audioStream, audioFormat, AudioSystem.NOT_SPECIFIED)) {
-                        coreAudioEngine.start(stream);
+                    try (InputStream is = currentSocket.getInputStream()) {
+                        AudioInputStream audioStream = getAudioInputStream(isNativeReceive, is);
+                        countDownLatch.countDown();
+                        coreAudioEngine.start(audioStream);
                     }
                 }
             } catch (IOException e) {
@@ -47,6 +59,17 @@ public class TarsosAudioEngine {
         }, "Audio dispatching");
         audioThread.setDaemon(true);
         audioThread.start();
+    }
+
+    private AudioInputStream getAudioInputStream(boolean isNativeReceive, InputStream is) throws IOException {
+        InputStream sourceInputStream = isNativeReceive ? is : new NetworkInputStream(is);
+        InputStream inputStream;
+        if (splittedInputStream == null) {
+            inputStream = sourceInputStream;
+        } else {
+            inputStream = new TeeInputStream(sourceInputStream, new PipedOutputStream(splittedInputStream));
+        }
+        return new AudioInputStream(inputStream, getAudioFormat(), AudioSystem.NOT_SPECIFIED);
     }
 
     public void stop() {
@@ -74,7 +97,7 @@ public class TarsosAudioEngine {
         return coreAudioEngine.getFttListenerList();
     }
 
-    private AudioFormat getAudioFormat() {
+    public static AudioFormat getAudioFormat() {
         return new AudioFormat(48000, 16, 1, true, false);
     }
 

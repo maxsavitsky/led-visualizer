@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public class FrequencyBarsColorCalculator {
 
-    private static final long CHANGE_INTERVAL_MILLIS = 500;
+    private static final long CHANGE_INTERVAL_MILLIS = 700;
     private static final Color DEFAULT_COLOR = Color.hsb(189, 1, 1);
 
     private Color startColor = DEFAULT_COLOR;
