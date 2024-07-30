@@ -33,6 +33,10 @@ dependencies {
     api 'org.pf4j:pf4j:3.6.0'
     api 'org.slf4j:slf4j-api:2.0.7'
     api 'ch.qos.logback:logback-classic:1.4.6'
+
+    // https://mvnrepository.com/artifact/net.sf.py4j/py4j
+    implementation 'net.sf.py4j:py4j:0.10.9.7'
+
     testImplementation 'junit:junit:4.13.2'
 }
 

@@ -1,6 +1,7 @@
 package com.lazydash.audio.visualizer.spectrum.plugin;
 
 import com.lazydash.audio.visualizer.spectrum.core.TarsosAudioEngine;
+import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsColorCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.audio.TarsosCoreAudioEngine;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
 import com.lazydash.audio.visualizer.spectrum.ui.fxml.spectrum.SettingsController;
@@ -14,6 +15,8 @@ public class PluginSystem {
     private PluginManager pluginManager = new DefaultPluginManager();
 
     private static PluginSystem pluginSystem = new PluginSystem();
+
+    private final FrequencyBarsColorCalculator barsColorCalculator = new FrequencyBarsColorCalculator();
 
     private PluginSystem(){}
 
@@ -33,7 +36,7 @@ public class PluginSystem {
     public void registerAllFffPlugins(TarsosAudioEngine tarsosAudioEngine){
         List<SpectralExtensionPoint> fftRegisters = pluginManager.getExtensions(SpectralExtensionPoint.class);
         for (SpectralExtensionPoint fftRegister : fftRegisters) {
-            FrequencyBarsFFTService frequencyBarsFFTService = new FrequencyBarsFFTService();
+            FrequencyBarsFFTService frequencyBarsFFTService = new FrequencyBarsFFTService(barsColorCalculator);
             tarsosAudioEngine.getFttListenerList().add(frequencyBarsFFTService);
             fftRegister.register(frequencyBarsFFTService);
         }

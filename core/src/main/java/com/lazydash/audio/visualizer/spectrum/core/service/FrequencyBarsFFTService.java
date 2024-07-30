@@ -2,6 +2,7 @@ package com.lazydash.audio.visualizer.spectrum.core.service;
 
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.BarsHeightCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.FFTTimeFilter;
+import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsColorCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsCreator;
 import com.lazydash.audio.visualizer.spectrum.core.audio.FFTListener;
 import com.lazydash.audio.visualizer.spectrum.core.model.FrequencyBar;
@@ -32,6 +33,12 @@ public class FrequencyBarsFFTService implements FFTListener {
     private BarsHeightCalculator barsHeightCalculator = new BarsHeightCalculator();
 
     private List<FrequencyBar> frequencyBars = new ArrayList<>();
+
+    private final FrequencyBarsColorCalculator barsColorCalculator;
+
+    public FrequencyBarsFFTService(FrequencyBarsColorCalculator barsColorCalculator) {
+        this.barsColorCalculator = barsColorCalculator;
+    }
 
     @Override
     public void frame(double[] hzBins, double[] normalizedAmplitudes) {
@@ -87,7 +94,7 @@ public class FrequencyBarsFFTService implements FFTListener {
         if (returnAmplitudes != null) {
             returnAmplitudes = fftTimeFilter.filter(returnAmplitudes);
             returnAmplitudes = barsHeightCalculator.processAmplitudes(returnAmplitudes);
-            frequencyBars = FrequencyBarsCreator.createFrequencyBars(returnBinz, returnAmplitudes);
+            frequencyBars = FrequencyBarsCreator.createFrequencyBars(returnBinz, returnAmplitudes, barsColorCalculator);
         }
 
         long newTime = System.currentTimeMillis();

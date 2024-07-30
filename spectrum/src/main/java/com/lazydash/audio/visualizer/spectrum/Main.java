@@ -1,6 +1,7 @@
 package com.lazydash.audio.visualizer.spectrum;
 
 import com.lazydash.audio.visualizer.spectrum.core.TarsosAudioEngine;
+import com.lazydash.audio.visualizer.spectrum.core.algorithm.FrequencyBarsColorCalculator;
 import com.lazydash.audio.visualizer.spectrum.core.service.FrequencyBarsFFTService;
 import com.lazydash.audio.visualizer.spectrum.plugin.PluginSystem;
 import com.lazydash.audio.visualizer.spectrum.core.CoreConfig;
@@ -69,7 +70,9 @@ public class Main extends Application {
         Scene scene = createScene(spectralView);
         Stage settingsStage = createSettingsStage();
 
-        FrequencyBarsFFTService spectralFFTService = new FrequencyBarsFFTService();
+        FrequencyBarsColorCalculator barsColorCalculator = new FrequencyBarsColorCalculator();
+
+        FrequencyBarsFFTService spectralFFTService = new FrequencyBarsFFTService(barsColorCalculator);
         SpectralAnimator spectralAnimator = new SpectralAnimator(spectralFFTService, spectralView);
 
         LedDataSenderService dataSenderService = new LedDataSenderService(spectralFFTService);

@@ -20,6 +20,8 @@ public class CoreConfig {
     public static double maxBarHeight = 352;
     public static int hzLabelHeight = 20;
 
+    public static int barsColorMode = 0;
+
 
     // bar acceleration
     public static int millisToZero = 400;

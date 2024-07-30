@@ -90,16 +90,22 @@ public class LedDataSenderService {
         //LOGGER.info(String.valueOf(len));
         bytes[0] = (byte) (len >> 8);
         bytes[1] = (byte) (len & 0xFF);
-        bytes[2] = 7;
+        bytes[2] = (byte) CoreConfig.barsColorMode; // color mode
         // args
-        bytes[3] = (byte) 255; // hue (ignored)
-        bytes[4] = (byte) 255; // saturation
+        bytes[3] = (byte) (255 * (CoreConfig.barsColorMode == 0 ? 0 : list.get(0).getColorHue() / 360)); // hue
+        bytes[4] = (byte) (255 * (CoreConfig.barsColorMode == 0 ? 1.0 : list.get(0).getColorSaturation())); // saturation
         boolean areAllEmpty = true;
         for(int i = 0; i < sz; i++){
             var bar = list.get(i);
-            var hueVal = bar.getColorHue() / 360.0;
-            bytes[5 + i] = (byte) (hueVal * 255);
-            areAllEmpty &= (1 - hueVal) <= 0.02;
+            byte value = 0;
+            if (CoreConfig.barsColorMode == 0) {
+                var hueVal = bar.getColorHue() / 360.0;
+                value = (byte) (hueVal * 255);
+            } else if (CoreConfig.barsColorMode == 1) {
+                value = (byte) (bar.getHeightRatio() * 255);
+            }
+            bytes[5 + i] = value;
+            areAllEmpty &= bar.getHeightRatio() <= 0.02;
         }
         if (areAllEmpty && isPreviousDataWasEmpty) return; // just skip
         isPreviousDataWasEmpty = areAllEmpty;

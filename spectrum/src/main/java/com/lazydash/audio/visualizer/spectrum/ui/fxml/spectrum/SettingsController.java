@@ -23,6 +23,7 @@ public class SettingsController {
         Map<String, Parent> map = new LinkedHashMap<>();
         map.put("Spectral view", loadFxml("/ui/fxml/spectrum/settings/spectral_view.fxml"));
         map.put("Bar decay", loadFxml("/ui/fxml/spectrum/settings/bar_decay.fxml"));
+        map.put("Spectral color", loadFxml("/ui/fxml/spectrum/settings/spectral_color.fxml"));
 
         map.keySet().forEach((title) -> {
             addTitleToSettingsFMXL(title, map.get(title));

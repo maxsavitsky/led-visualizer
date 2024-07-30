@@ -65,7 +65,7 @@ public class SpectralView extends GridPane {
 
             frequencyView.setHzValue(frequencyBar.getHz());
 
-            frequencyView.getRectangle().setFill(Color.hsb(frequencyBar.getColorHue(), 1.0, 1.0));
+            frequencyView.getRectangle().setFill(frequencyBar.getColor());
             // rounding is needed because of the subpixel rendering
             frequencyView.getRectangle().setHeight(Math.round(frequencyBar.getHeight()));
 

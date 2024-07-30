@@ -77,7 +77,7 @@ public class ConfigFilePersistence {
                     break;
 
                 case "int":
-                    field.setInt(null, Integer.valueOf(appProps.getProperty(field.getName())));
+                    field.setInt(null, Integer.valueOf(appProps.getProperty(field.getName(), String.valueOf(field.getInt(null)))));
                     break;
 
                 case "boolean":
